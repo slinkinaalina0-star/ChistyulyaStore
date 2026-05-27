@@ -1,0 +1,119 @@
+﻿<Page x:Class="ChistyulyaStore.Pages.ClientPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:ChistyulyaStore.Pages"
+      xmlns:convert="clr-namespace:ChistyulyaStore.Converts"
+      mc:Ignorable="d"
+      d:DesignHeight="650" d:DesignWidth="1500"
+      Title="ClientPage"
+      FontFamily="Segoe UI">
+
+        <Page.Resources>
+            <convert:DiscountPrice x:Key="DiscountPrice"/>
+            <convert:DiscountColor x:Key="DiscountColor"/>
+        </Page.Resources>
+
+        <Grid Background="#FFFFFF">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.2*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="0.2*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Верхняя панель -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+                <TextBlock x:Name="FIOBlock" Text="" VerticalAlignment="Center" Margin="10"/>
+
+                <!-- Кнопка просмотра заказа (изначально скрыта) -->
+                <Button x:Name="viewOrderButton" Content="Просмотр заказа" 
+                    Click="viewOrderButton_Click" 
+                    Background="#20B2AA" Foreground="White"
+                    Margin="5" Padding="10,5" Visibility="Collapsed"/>
+
+                <Button x:Name="goBackButton" Content="Выйти" 
+                    Click="goBackButton_Click" 
+                    Background="#20B2AA" Foreground="White"
+                    Margin="5" Padding="10,5"/>
+            </StackPanel>
+
+            <!-- Список товаров с контекстным меню -->
+            <ListView Grid.Row="1" Margin="10,0,10,10" Name="productList" 
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+
+                <!-- КОНТЕКСТНОЕ МЕНЮ (ПРАВАЯ КНОПКА МЫШИ) -->
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Добавить к заказу" Click="AddToOrder_Click"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
+
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="#20B2AA" BorderThickness="2" Width="600" Margin="5"
+                            Background="{Binding ., Converter={StaticResource DiscountColor}}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="0.3*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Фото -->
+                                <StackPanel Grid.Column="0">
+                                    <Image Source="{Binding ProductImage}" Width="120" Height="120" Margin="10"/>
+                                </StackPanel>
+
+                                <!-- Информация о товаре -->
+                                <StackPanel Grid.Column="1" Margin="10">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Categories.CategoryName}" FontWeight="Black"/>
+                                        <TextBlock Text=" | " FontWeight="Black"/>
+                                        <TextBlock Text="{Binding ProductName}" FontWeight="Black"/>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Description, StringFormat='Описание товара: {0}'}" 
+                                           TextWrapping="Wrap"/>
+                                    <TextBlock Text="{Binding Manufacturers.ManufacturerName, 
+                                           StringFormat='Производитель: {0}'}"/>
+                                    <TextBlock Text="{Binding Suppliers.SuppliersName, 
+                                           StringFormat='Поставщик: {0}'}"/>
+                                    <TextBlock Text="{Binding UnitsOfMeasurement.Name, 
+                                           StringFormat='Единица измерения: {0}'}"/>
+                                    <TextBlock Text="{Binding StockQuantity, 
+                                           StringFormat='Количество на складе: {0}'}"/>
+
+                                    <!-- Цены -->
+                                    <StackPanel Orientation="Horizontal" Margin="0,5">
+                                        <TextBlock Text="Цена: "/>
+                                        <TextBlock Text="{Binding Price, StringFormat=' {0:F2} р.'}" 
+                                               Foreground="Red" TextDecorations="Strikethrough"/>
+                                        <TextBlock>
+                                            <TextBlock.Text>
+                                                <MultiBinding Converter="{StaticResource DiscountPrice}" 
+                                                          StringFormat=' {0:F2} р.'>
+                                                    <Binding Path="Price"/>
+                                                    <Binding Path="Discount"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- Скидка -->
+                                <TextBlock Grid.Column="2" Text="{Binding Discount, StringFormat=' {0}%'}" 
+                                       VerticalAlignment="Center" FontSize="18" FontWeight="Bold"
+                                       Foreground="#FF7F50" HorizontalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+    </Page>
